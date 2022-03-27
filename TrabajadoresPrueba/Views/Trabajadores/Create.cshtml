@@ -1,0 +1,137 @@
+﻿@model TrabajadoresPrueba.Models.Trabajadores
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+
+
+<h4>Trabajadores</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddTrabajadores">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+           
+            <div class="form-group">
+                <label asp-for="TipoDocumento" class="control-label"> Tipo de Documento</label>
+                <select asp-for="TipoDocumento" class="form-control">
+                    <option value="-1">Seleccione</option>
+                                   <option value="DNI">Dni</option>
+                                        <option value="CE">Carnet de Extranjeria</option>
+                                        <option value="PSP">Pasaporte</option>
+
+
+
+
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="NumeroDocumento" class="control-label">Numero de Documento</label>
+                <input asp-for="NumeroDocumento" class="form-control" />
+                <span asp-validation-for="NumeroDocumento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                                <input type="hidden" asp-for="Id" />
+
+                <label asp-for="Nombres" class="control-label"></label>
+                <input asp-for="Nombres" class="form-control" />
+                <span asp-validation-for="Nombres" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+               <label asp-for="Sexo" class="control-label"></label>
+                <select asp-for="Sexo" class="form-control">
+                                   <option value="-1">Seleccione</option>
+                                        <option value="F">Femenino</option>
+                                        <option value="M">Masculino</option>
+
+
+
+
+                </select>
+
+
+               
+            </div>
+            <div class="form-group">
+                <label asp-for="Departamento" class="control-label"></label>
+                <select asp-for="IdDepartamento" class="form-control" id="DepartamentoList" asp-items="@(new SelectList(ViewBag.DepList,"Id","NombreDepartamento"))">
+                     <option value="-1">Seleccione</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Provincia" class="control-label"></label>
+
+                <select asp-for="IdProvincia" class="form-control" id="ProvinciaList">
+                    <option value="-1">Cargando...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Distrito" class="control-label"></label>
+                <select asp-for="IdDistrito" class="form-control" id="DistritoList">
+                                        <option value="-1">Cargando...</option>
+
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+                    <a asp-action="TrabajadoresList" class="btn btn-outline-success">Lista de Trabajadores</a>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    $(document).ready(function(){
+        $("#DepartamentoList").on("change",function(){
+            $.ajax({
+                type:"Post",
+                url:"/Trabajadores/GetProvincia",
+                data:{"IdDepartamento":$("#DepartamentoList").val()},
+                success: function(response){
+                    var items = '';
+                    $(response).each(function(){
+                        items+= "<option value="+this.value+">"+this.text+"</option>";
+                    })
+                    $("#ProvinciaList").html(items);
+                },
+                failure : function(response){
+                    alert(response.response.Text);
+                },
+                error: function(response){
+                    alert(response.responseText);
+                }
+
+            });
+        })
+        $("#ProvinciaList").on("change",function(){
+            $.ajax({
+                type:"Post",
+                url:"/Trabajadores/GetDistrito",
+                data:{"IdProvincia":$("#ProvinciaList").val()},
+                success: function(response){
+                    var items = '';
+                    $(response).each(function(){
+                        items+= "<option value="+this.value+">"+this.text+"</option>";
+                    })
+                    $("#DistritoList").html(items);
+                },
+                failure : function(response){
+                    alert(response.response.Text);
+                },
+                error: function(response){
+                    alert(response.responseText);
+                }
+
+            });
+        })
+    })
+    </script>
+}
+
